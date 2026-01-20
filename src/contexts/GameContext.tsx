@@ -1,8 +1,11 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-type HPOptions = 50 | 100 | 150 | 200 | 250;
+export const HP_VALUES = [50, 100, 150, 200, 250] as const;
+export type HPOptions = typeof HP_VALUES[number];
 
-interface Player{
+type GameState = "menu" | "ingame" | "howtoplay" | "register";
+
+export interface Player{
     name: string;
     team: 1 | 2;
 }
@@ -22,47 +25,52 @@ interface GameContextData {
     currentPlayer: Player | null;
     rollDice: (dice: 6 | 10 | 20) => void;
     actionLog: Action[];
+    gameState: GameState;
+    handleState: (newState: GameState) => void;
+    preStartRegister: (newPlayers: Player[], newMaxHP: HPOptions) => void
 }
-
-const playersTest: Player[] = [
-    {
-        name: "Bernardin",
-        team: 2,
-    },
-    {
-        name: "Miguelzin",
-        team: 1,
-    },
-    {
-        name: "Gutin",
-        team: 1,
-    },
-    {
-        name: "Thiaguin",
-        team: 2,
-    },
-]
 
 const GameContext = createContext<GameContextData>({} as GameContextData);
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
+    // STATES
+    const [gameState, setGameState] = useState<GameState>("menu");
+   
     // MAIN MENU
-    const [players, setPlayers] = useState<Player[]>(playersTest);
+    const [players, setPlayers] = useState<Player[]>([]);
     
     const updateMaxHP = (newMaxHP: HPOptions) => {
         setMaxHP(newMaxHP);
         setTeam1HP(newMaxHP);
         setTeam2HP(newMaxHP);
     };
+
+    const preStartRegister = (newPlayers: Player[], newMaxHP: HPOptions) => {
+        setPlayers(newPlayers);
+        updateMaxHP(newMaxHP);
+        // Limpa estados de jogo anterior
+        setActionLog([]);
+        setCurrentRound(1);
+        setCurrentPlayer(null); 
+        setTurnOrder([]);
+    }
     
     // IN GAME
-    const [currentPlayer, setCurrentPlayer] = useState<Player | null>(() => {
-        const first = playersTest[Math.floor(Math.random() * playersTest.length)];
-        return first;
-    });
+    const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+
+    useEffect(() => {
+        if (gameState === "ingame" && players.length > 0 && !currentPlayer) {
+            // 1. Sorteia o primeiro jogador
+            const first = players[Math.floor(Math.random() * players.length)];
+            setCurrentPlayer(first);
+            
+            // 2. Já inicia a fila com ele
+            setTurnOrder([first]);
+        }
+    }, [gameState, players]);
 
     const [currentRound, setCurrentRound] = useState(1);
-    const [turnOrder, setTurnOrder] = useState<Player[]>(currentPlayer ? [currentPlayer] : []);
+    const [turnOrder, setTurnOrder] = useState<Player[]>([]);
     
     const [maxHP, setMaxHP] = useState(200);
     const [team1HP, setTeam1HP] = useState(200);
@@ -71,7 +79,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const [actionLog, setActionLog] = useState<Action[]>([]);
 
     const toggleTurn = () => {
-        if (!currentPlayer) return;
+        if (!currentPlayer || players.length === 0) return;
 
         // Se ainda estamos no Round 1, precisamos definir a ordem
         if (currentRound === 1) {
@@ -161,15 +169,22 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const handleState = (newState: GameState) => {
+        setGameState(newState);
+    }
+
     return (
         <GameContext.Provider value={{
+            gameState,
+            handleState,
             players,
             team1HP,
             team2HP,
             maxHP,
             currentPlayer,
             rollDice,
-            actionLog
+            actionLog,
+            preStartRegister
         }}>
             {children}
         </GameContext.Provider>
