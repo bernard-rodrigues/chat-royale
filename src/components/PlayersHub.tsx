@@ -8,7 +8,7 @@ interface PlayersHubProps{
 export const PlayersHub = ({team}: PlayersHubProps) => {
     return(
         <div className={`
-            flex-1 bg-fuchsia-300 p-2 flex 
+            flex-1 p-2 flex 
             ${team === 1 ? "flex-col" : "flex-col-reverse"}
         `}>
             <PlayersContainer team={team}/>

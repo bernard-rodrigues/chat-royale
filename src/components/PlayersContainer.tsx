@@ -1,26 +1,25 @@
 import { useGame } from "../contexts/GameContext";
-import { Player } from "./Player";
+import { PlayerData } from "./PlayerData";
 
 interface PlayersContainerProps{
     team: 1 | 2;
 }
 
 export const PlayersContainer = ({ team }: PlayersContainerProps) => {
-    const { players, currentPlayer } = useGame();
+    const { players } = useGame();
 
     // Filtramos os jogadores do time antes de renderizar
     const teamPlayers = players.filter(p => p.team === team);
 
     return (
         <div className={`
-            w-full h-2/3 bg-lime-300 p-2 flex flex-col gap-2 
-            ${team === 2 ? "items-end" : "items-start"}
+            w-full h-2/3 p-2 flex gap-2
+            ${team === 2 ? "items-end flex-col" : "items-start flex-col-reverse"}
         `}>
             {teamPlayers.map(player => (
-                <Player 
+                <PlayerData 
                     key={player.name} 
-                    playerName={player.name}
-                    isPlaying={player === currentPlayer}
+                    player={player}
                 />
             ))}
         </div>

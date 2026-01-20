@@ -30,7 +30,7 @@ export const PlayerRegister = () => {
 
     return (
         <form 
-            className="h-screen flex flex-col items-center justify-center gap-6 bg-slate-900 text-white p-4"
+            className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-900 text-white px-6"
             onSubmit={handleFormSubmit}
         >
             <h2 className="text-3xl font-bold text-amber-400">Battle Setup</h2>
@@ -53,7 +53,7 @@ export const PlayerRegister = () => {
             </div>
 
             {/* Colunas de Times */}
-            <div className="flex flex-col gap-8 w-full max-w-2xl justify-center">
+            <div className="flex flex-col gap-8 w-full max-w-2xl justify-center items-center">
                 {/* Lado Time 1 */}
                 <div className="flex flex-col gap-3 flex-1">
                     <h4 className="text-center font-bold text-blue-400">Team 1</h4>
