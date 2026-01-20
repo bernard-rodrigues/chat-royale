@@ -3,9 +3,9 @@ import { GamePanel } from "./components/GamePanel";
 
 export const App = () => {
   return(
-    <>
+    <main className="h-screen">
       <GamePanel/>
       <ActionHub/>
-    </>
+    </main>
   );
 }
