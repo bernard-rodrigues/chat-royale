@@ -3,8 +3,8 @@ import { PlayersHub } from "./PlayersHub";
 import { Vs } from "./Vs";
 
 export const GamePanel = () => {
-    const [team1HP, setTeam1HP] = useState(83);
-    const [team2HP, setTeam2HP] = useState(112);
+    const [team1HP, setTeam1HP] = useState(200);
+    const [team2HP, setTeam2HP] = useState(200);
     const [team1Members, setTeam1Members] = useState(["Miguelzin", "Gutin"]);
     const [team2Members, setTeam2Members] = useState(["Bernardin", "Thiaguin"]);
     const [maxHP, setMaxHP] = useState(200);
