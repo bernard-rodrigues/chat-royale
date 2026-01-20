@@ -1,9 +1,13 @@
 interface PlayerProps{
-    playerName: string
+    playerName: string;
+    isPlaying: boolean
 }
 
-export const Player = ({playerName}: PlayerProps) => {
+export const Player = ({playerName, isPlaying}: PlayerProps) => {
     return(
-        <div className="bg-neutral-300 w-fit px-2 py-1">{playerName}</div>
+        <div className={`
+             w-fit px-2 py-1
+            ${isPlaying ? "bg-neutral-500" : "bg-neutral-300"}
+        `}>{playerName}</div>
     );
 }

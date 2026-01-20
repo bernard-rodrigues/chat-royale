@@ -1,11 +1,14 @@
 import { ActionHub } from "./components/ActionHub";
 import { GamePanel } from "./components/GamePanel";
+import { GameProvider } from "./contexts/GameContext";
 
 export const App = () => {
   return(
     <main className="h-screen">
-      <GamePanel/>
-      <ActionHub/>
+      <GameProvider>
+        <GamePanel/>
+        <ActionHub/>
+      </GameProvider>
     </main>
   );
 }
