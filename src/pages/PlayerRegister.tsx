@@ -30,7 +30,7 @@ export const PlayerRegister = () => {
 
     return (
         <form 
-            className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-900 text-white px-6"
+            className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-900 text-white px-6 py-12"
             onSubmit={handleFormSubmit}
         >
             <h2 className="text-3xl font-bold text-amber-400">Battle Setup</h2>
@@ -71,7 +71,7 @@ export const PlayerRegister = () => {
                 <div className="flex items-center font-black text-2xl text-slate-500">VS</div>
 
                 {/* Lado Time 2 */}
-                <div className="flex flex-col-reverse gap-3 flex-1 text-right">
+                <div className="flex flex-col gap-3 flex-1 text-right">
                     <h4 className="text-center font-bold text-red-400">Team 2</h4>
                     {Array.from({ length: playersPerTeam }).map((_, i) => (
                         <input 

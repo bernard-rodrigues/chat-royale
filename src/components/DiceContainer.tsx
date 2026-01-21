@@ -9,17 +9,17 @@ export const DiceContainer = ({ dice }: DiceContainerProps) => {
     
     return(
         <div className="
-            bg-cyan-300 h-full flex-1 
+            bg-slate-950 h-full flex-1 p-2 rounded
             flex flex-col
         ">
             <div className="
-                bg-emerald-300 flex-1
+                flex-1 
                 flex justify-center items-center
             ">
                 <span className="text-4xl">{dice === 6 ? "✨" : dice === 20 ? "⚔️" : "🛡️"}</span>
             </div>
             <button 
-                className="flex-1 text-4xl"
+                className="flex-1 rounded bg-amber-500 hover:bg-amber-400 text-4xl font-black italic text-white drop-shadow-[0_2px_1px_rgba(0,0,0,1)] select-none"
                 onClick={() => rollDice(dice)}
             >
                 D{dice}

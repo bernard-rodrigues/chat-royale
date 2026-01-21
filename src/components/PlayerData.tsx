@@ -11,7 +11,7 @@ export const PlayerData = ({player}: PlayerProps) => {
         <div className={`
             w-fit px-2 py-1
             ${player.team === 1 ? "text-center font-bold text-blue-400" : "text-center font-bold text-red-400"}
-            ${player === currentPlayer ? "bg-neutral-500" : "bg-neutral-300"}
+            ${player === currentPlayer ? "bg-amber-200" : "bg-slate-700"}
         `}>{player.name}</div>
     );
 }
