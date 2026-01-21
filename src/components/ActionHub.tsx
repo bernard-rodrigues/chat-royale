@@ -12,7 +12,7 @@ export const ActionHub = () => {
     )
 
     return (
-        <div className="bg-slate-900 h-2/6 p-4 flex gap-2">
+        <div className="h-2/6 p-4 flex gap-2 animate-appear-from-bottom">
             {healIsVisible && <DiceContainer dice={6} />}
             <DiceContainer dice={20}/> 
             {defenseIsVisible && <DiceContainer dice={10}/>}

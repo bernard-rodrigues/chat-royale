@@ -5,6 +5,70 @@
     100% { background-position: 200% 0; }
 }
 
+@keyframes display-message {
+  /* Entrada: Rápida e com impacto (vinda de cima) */
+  0% {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.9);
+  }
+  8% {
+    opacity: 1;
+    transform: translateY(0) scale(1.05);
+  }
+  12% {
+    transform: translateY(0) scale(1);
+  }
+
+  /* Permanência: Estática no centro */
+  85% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Saída: Deslizando para baixo e sumindo */
+  100% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes appear-from-top {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes appear-from-bottom {
+    0% {
+        opacity: 0;
+        transform: translateY(50%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes appear-from-right {
+    0% {
+        opacity: 0;
+        transform: translateX(50%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 @theme{
-    --animate-shimmer: shimmer 2s infinite
+    --animate-shimmer: shimmer 2s infinite;
+    --animate-display-message: display-message 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    --animate-appear-from-top: appear-from-top 1s forwards;
+    --animate-appear-from-bottom: appear-from-bottom 1s forwards;
+    --animate-appear-from-right: appear-from-right 1s forwards;
 }

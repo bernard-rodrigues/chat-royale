@@ -5,7 +5,7 @@ interface DiceContainerProps{
 }
 
 export const DiceContainer = ({ dice }: DiceContainerProps) => {
-    const {rollDice} = useGame()
+    const {rollDice, messageIsVisible} = useGame()
     
     return(
         <div className="
@@ -19,8 +19,11 @@ export const DiceContainer = ({ dice }: DiceContainerProps) => {
                 <span className="text-4xl">{dice === 6 ? "✨" : dice === 20 ? "⚔️" : "🛡️"}</span>
             </div>
             <button 
-                className="flex-1 rounded bg-amber-500 hover:bg-amber-400 text-4xl font-black italic text-white drop-shadow-[0_2px_1px_rgba(0,0,0,1)] select-none"
+                className="
+                    flex-1 rounded bg-amber-500 hover:bg-amber-400 text-4xl font-black italic text-white drop-shadow-[0_2px_1px_rgba(0,0,0,1)] select-none 
+                    disabled:bg-neutral-300 disabled:text-neutral-700"
                 onClick={() => rollDice(dice)}
+                disabled={messageIsVisible}
             >
                 D{dice}
             </button>

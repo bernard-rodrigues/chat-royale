@@ -27,7 +27,10 @@ interface GameContextData {
     actionLog: Action[];
     gameState: GameState;
     handleState: (newState: GameState) => void;
-    preStartRegister: (newPlayers: Player[], newMaxHP: HPOptions) => void
+    preStartRegister: (newPlayers: Player[], newMaxHP: HPOptions) => void;
+    displayMessage: (content: string) => void;
+    message: string;
+    messageIsVisible: boolean;
 }
 
 const GameContext = createContext<GameContextData>({} as GameContextData);
@@ -77,6 +80,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const [team2HP, setTeam2HP] = useState(200);
 
     const [actionLog, setActionLog] = useState<Action[]>([]);
+
+    const [message, setMessage] = useState("");
+    const [messageIsVisible, setMessageIsVisible] = useState(false);
 
     const toggleTurn = () => {
         if (!currentPlayer || players.length === 0) return;
@@ -139,6 +145,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 const healValue = result === 6 ? 20 : result === 5 ? 10 : result;
                 currentPlayer.team === 1 ? setTeam1HP(prev => Math.min(prev + healValue, maxHP)) : setTeam2HP(prev => Math.min(prev + healValue, maxHP));
                 setActionLog(prev => [...prev, {player: currentPlayer, type: "heal", value: healValue, round: currentRound}]);
+                displayMessage(`🎲${result}\n✨ Cura! Time ${currentPlayer.team} ganhou ${healValue}HP!`);
             }else if(dice === 10 && actionLog.length > 0){
                 // D10: Last action must be an attack from opponent
                     // 1: Critical miss: take additional damage
@@ -150,9 +157,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                     const failure = Math.floor(lastAction.value*0.5);
                     currentPlayer.team === 1 ? setTeam1HP(prev => Math.max(0, prev - failure)) : setTeam2HP(prev => Math.max(0, prev - failure));
                     setActionLog(prev => [...prev, {player: currentPlayer, type: "defense", value: -failure, round: currentRound}]);
+                    displayMessage(`🎲${result}\n❗ Falha crítica! Time ${currentPlayer.team} perdeu ${failure}HP!`);
                 }else{
                     currentPlayer.team === 1 ? setTeam1HP(prev => Math.min(prev + result, maxHP)) : setTeam2HP(prev => Math.min(prev + result, maxHP));
                     setActionLog(prev => [...prev, {player: currentPlayer, type: "defense", value: result, round: currentRound}]);
+                    displayMessage(`🎲${result}\n🛡️ Defesa! Time ${currentPlayer.team} recuperou ${result}HP!`);
                 }
             }
             else{
@@ -162,6 +171,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 const attackValue = result === 20 ? result*2 : result;
                 currentPlayer.team === 1 ? setTeam2HP(prev => Math.max(0, prev - attackValue)) : setTeam1HP(prev => Math.max(0, prev - attackValue));
                 setActionLog(prev => [...prev, {player: currentPlayer, type: "attack", value: attackValue, round: currentRound}]);
+                displayMessage(`🎲${result}\n⚔️ Ataque${result === 20 ? " Crítico!!" : ""}! Time ${currentPlayer.team === 1 ? 2 : 1} perdeu ${attackValue}HP!`);
             }
             toggleTurn();
         }else{
@@ -171,6 +181,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     const handleState = (newState: GameState) => {
         setGameState(newState);
+    }
+
+    const displayMessage = (content: string) => {
+        setMessage(content);
+        setMessageIsVisible(true);
+        setTimeout(() => {
+            setMessageIsVisible(false);
+            setMessage("");
+        }, 3000);
     }
 
     return (
@@ -184,7 +203,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             currentPlayer,
             rollDice,
             actionLog,
-            preStartRegister
+            preStartRegister,
+            displayMessage,
+            message,
+            messageIsVisible
         }}>
             {children}
         </GameContext.Provider>
