@@ -30,7 +30,7 @@ export const PlayerRegister = () => {
 
     return (
         <form 
-            className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-900 text-white px-6 py-12"
+            className="min-h-dvh flex flex-col items-center justify-center gap-6 bg-slate-900 text-white px-6 py-12"
             onSubmit={handleFormSubmit}
         >
             <h2 className="text-3xl font-bold text-amber-400">Battle Setup</h2>

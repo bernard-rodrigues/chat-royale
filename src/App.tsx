@@ -8,7 +8,7 @@ export const App = () => {
   const {gameState} = useGame();
   
   return(
-    <main className="h-screen">      
+    <main className="h-dvh">      
         { gameState === "menu" ? 
         <Main />
         : gameState === "register" ? 
