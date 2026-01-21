@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-export const HP_VALUES = [50, 100, 150, 200, 250] as const;
+export const HP_VALUES = [1, 50, 100, 150, 200, 250] as const;
 export type HPOptions = typeof HP_VALUES[number];
 
 type GameState = "menu" | "ingame" | "howtoplay" | "register";
@@ -27,7 +27,7 @@ interface GameContextData {
     actionLog: Action[];
     gameState: GameState;
     handleState: (newState: GameState) => void;
-    preStartRegister: (newPlayers: Player[], newMaxHP: HPOptions) => void;
+    preStartRegister: (newPlayers?: Player[], newMaxHP?: HPOptions) => void;
     displayMessage: (content: string) => void;
     message: string;
     messageIsVisible: boolean;
@@ -36,6 +36,14 @@ interface GameContextData {
 const GameContext = createContext<GameContextData>({} as GameContextData);
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, []);
+    
     // STATES
     const [gameState, setGameState] = useState<GameState>("menu");
    
@@ -48,36 +56,54 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setTeam2HP(newMaxHP);
     };
 
-    const preStartRegister = (newPlayers: Player[], newMaxHP: HPOptions) => {
-        setPlayers(newPlayers);
-        updateMaxHP(newMaxHP);
-        // Limpa estados de jogo anterior
+    const preStartRegister = (newPlayers?: Player[], newMaxHP?: HPOptions) => {
+        // 1. Atualiza jogadores e HP
+        const currentPlayers = newPlayers ?? players;
+        setPlayers(currentPlayers);
+        updateMaxHP(newMaxHP ?? maxHP);
+
+        // 2. Limpa estados de jogo anterior
         setActionLog([]);
         setCurrentRound(1);
-        setCurrentPlayer(null); 
         setTurnOrder([]);
+        setMessageIsVisible(false);
+
+        // 3. NOVO SORTEIO MANUAL (Garante que o jogo recomece imediatamente)
+        if (currentPlayers.length > 0) {
+            const first = currentPlayers[Math.floor(Math.random() * currentPlayers.length)];
+            setCurrentPlayer(first);
+            setTurnOrder([first]);
+        } else {
+            setCurrentPlayer(null);
+        }
     }
     
     // IN GAME
     const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
 
-    useEffect(() => {
-        if (gameState === "ingame" && players.length > 0 && !currentPlayer) {
-            // 1. Sorteia o primeiro jogador
-            const first = players[Math.floor(Math.random() * players.length)];
-            setCurrentPlayer(first);
+    // useEffect(() => {
+    //     if (gameState === "ingame" && players.length > 0 && !currentPlayer) {
+    //         // 1. Sorteia o primeiro jogador
+    //         const first = players[Math.floor(Math.random() * players.length)];
+    //         setCurrentPlayer(first);
             
-            // 2. Já inicia a fila com ele
-            setTurnOrder([first]);
-        }
-    }, [gameState, players]);
+    //         // 2. Já inicia a fila com ele
+    //         setTurnOrder([first]);
+    //     }
+    // }, [gameState, players]);
 
     const [currentRound, setCurrentRound] = useState(1);
     const [turnOrder, setTurnOrder] = useState<Player[]>([]);
     
-    const [maxHP, setMaxHP] = useState(200);
+    const [maxHP, setMaxHP] = useState<HPOptions>(200);
     const [team1HP, setTeam1HP] = useState(200);
     const [team2HP, setTeam2HP] = useState(200);
+
+    useEffect(() => {
+        if(team1HP === 0 || team2HP === 0){
+            handleGameOver();
+        }
+    }, [team1HP, team2HP]);
 
     const [actionLog, setActionLog] = useState<Action[]>([]);
 
@@ -133,7 +159,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }
     };
     
-    
     const rollDice = (dice: 6 | 10 | 20) => {
         if(currentPlayer){
             const result = Math.floor(Math.random() * dice) + 1;
@@ -155,9 +180,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 
                 if(result === 1){
                     const failure = Math.floor(lastAction.value*0.5);
+                    if(currentPlayer.team === 1 && team1HP - failure > 0 || currentPlayer.team === 2 && team2HP - failure > 0){
+                        displayMessage(`🎲${result}\n❗ Falha crítica! Time ${currentPlayer.team} perdeu ${failure}HP!`);
+                    }
                     currentPlayer.team === 1 ? setTeam1HP(prev => Math.max(0, prev - failure)) : setTeam2HP(prev => Math.max(0, prev - failure));
                     setActionLog(prev => [...prev, {player: currentPlayer, type: "defense", value: -failure, round: currentRound}]);
-                    displayMessage(`🎲${result}\n❗ Falha crítica! Time ${currentPlayer.team} perdeu ${failure}HP!`);
                 }else{
                     currentPlayer.team === 1 ? setTeam1HP(prev => Math.min(prev + result, maxHP)) : setTeam2HP(prev => Math.min(prev + result, maxHP));
                     setActionLog(prev => [...prev, {player: currentPlayer, type: "defense", value: result, round: currentRound}]);
@@ -169,9 +196,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                     // 20: Double damage
                     // Other: Attacks with dice value
                 const attackValue = result === 20 ? result*2 : result;
+                if(currentPlayer.team === 1 && team2HP - attackValue > 0 || currentPlayer.team === 2 && team1HP - attackValue > 0){
+                    displayMessage(`🎲${result}\n⚔️ Ataque${result === 20 ? " Crítico!!" : ""}! Time ${currentPlayer.team === 1 ? 2 : 1} perdeu ${attackValue}HP!`);
+                }
                 currentPlayer.team === 1 ? setTeam2HP(prev => Math.max(0, prev - attackValue)) : setTeam1HP(prev => Math.max(0, prev - attackValue));
                 setActionLog(prev => [...prev, {player: currentPlayer, type: "attack", value: attackValue, round: currentRound}]);
-                displayMessage(`🎲${result}\n⚔️ Ataque${result === 20 ? " Crítico!!" : ""}! Time ${currentPlayer.team === 1 ? 2 : 1} perdeu ${attackValue}HP!`);
             }
             toggleTurn();
         }else{
@@ -180,16 +209,36 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleState = (newState: GameState) => {
+        setMessageIsVisible(false);
         setGameState(newState);
     }
 
-    const displayMessage = (content: string) => {
+    const displayMessage = (content: string, gameOver = false) => {
+        // Limpa qualquer timer de mensagem anterior que esteja rodando
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+        
         setMessage(content);
         setMessageIsVisible(true);
-        setTimeout(() => {
-            setMessageIsVisible(false);
-            setMessage("");
-        }, 3000);
+
+        if(!gameOver){
+            timerRef.current = setTimeout(() => {
+                setMessageIsVisible(false);
+                setMessage("");
+            }, 3000);
+        }
+    }
+
+    const handleGameOver = () => {
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+        debugger;
+        const gameOverMessage = `Game Over!\nTeam ${team1HP === 0 ? 2 : 1} wins!`
+        displayMessage(gameOverMessage, true);
     }
 
     return (

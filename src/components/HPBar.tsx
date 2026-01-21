@@ -18,7 +18,7 @@ export const HPBar = ({ team }: HPBarProps) => {
   const glowColor = isTeam1 ? "shadow-blue-500/50" : "shadow-red-500/50";
 
   return (
-    <div className={`w-full group ${isTeam1 ? "pr-8" : "pl-8"}`}>
+    <div className={`w-full group ${isTeam1 ? "pr-4" : "pl-4"}`}>
       <div className="relative h-10 w-full bg-slate-950 rounded-md border-2 border-slate-800 p-1 overflow-hidden shadow-2xl">
         
         {/* BARRA DE RESTORE (Sombra Verde) */}

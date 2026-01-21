@@ -12,6 +12,6 @@ export const PlayerData = ({player}: PlayerProps) => {
             w-fit px-2 py-1
             ${player.team === 1 ? "text-center font-bold text-blue-400" : "text-center font-bold text-red-400"}
             ${player === currentPlayer ? "bg-amber-200" : "bg-slate-700"}
-        `}>{player.name}</div>
+        `}>{player.name} - {currentPlayer?.name}</div>
     );
 }

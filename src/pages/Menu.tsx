@@ -1,6 +1,6 @@
 import { useGame } from "../contexts/GameContext";
 
-export const Main = () => {
+export const Menu = () => {
     const {handleState} = useGame();
     
     return(

@@ -14,21 +14,25 @@
   8% {
     opacity: 1;
     transform: translateY(0) scale(1.05);
+    visibility: visible;
   }
   12% {
     transform: translateY(0) scale(1);
+    visibility: visible;
   }
 
   /* Permanência: Estática no centro */
   85% {
     opacity: 1;
     transform: translateY(0) scale(1);
+    visibility: visible;
   }
 
   /* Saída: Deslizando para baixo e sumindo */
   100% {
     opacity: 0;
     transform: translateY(100%);
+    visibility: hidden;
   }
 }
 
@@ -65,9 +69,15 @@
     }
 }
 
+@keyframes appear{
+    from{ opacity: 0}
+    to{opacity: 1}
+}
+
 @theme{
     --animate-shimmer: shimmer 2s infinite;
     --animate-display-message: display-message 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    --animate-appear: appear 1s forwards;
     --animate-appear-from-top: appear-from-top 1s forwards;
     --animate-appear-from-bottom: appear-from-bottom 1s forwards;
     --animate-appear-from-right: appear-from-right 1s forwards;
