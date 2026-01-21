@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-export const HP_VALUES = [1, 50, 100, 150, 200, 250] as const;
+export const HP_VALUES = [50, 100, 150, 200, 250] as const;
 export type HPOptions = typeof HP_VALUES[number];
 
 type GameState = "menu" | "ingame" | "howtoplay" | "register";

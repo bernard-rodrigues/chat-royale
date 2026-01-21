@@ -11,9 +11,9 @@ export const PlayersHub = ({team}: PlayersHubProps) => {
     
     return(
         <div className={`
-            flex-1 p-2 flex 
+            flex-1 p-2 flex rounded
             ${team === 1 ? "flex-col" : "flex-col-reverse"}
-            ${team === currentPlayer?.team ? "bg-amber-400/10" : ""}
+            ${team === currentPlayer?.team ? "bg-white/50" : ""}
             transition-colors duration-1000
         `}>
             {team === currentPlayer?.team && 
